@@ -1,9 +1,10 @@
 
 import customtkinter as ctk
+from modules.ui_theme import CARD_BG, CARD_BORDER, TEXT_MUTED, ACCENT
 
 class DebloaterTab(ctk.CTkFrame):
     def __init__(self, master, adb_manager, bloatware_list):
-        super().__init__(master)
+        super().__init__(master, fg_color="transparent")
         self.adb_manager = adb_manager
         self.bloatware_list = bloatware_list
 
@@ -12,25 +13,28 @@ class DebloaterTab(ctk.CTkFrame):
 
         # Header
         self.header_frame = ctk.CTkFrame(self, fg_color="transparent")
-        self.header_frame.pack(fill="x", padx=20, pady=5)
+        self.header_frame.pack(fill="x", padx=20, pady=(10, 4))
 
-        self.label_info = ctk.CTkLabel(self.header_frame, text="Select MIUI Packages to Remove", font=("Roboto Medium", 16))
-        self.label_info.pack(side="left", pady=10)
+        self.label_info = ctk.CTkLabel(self.header_frame, text="Debloater", font=("Roboto Medium", 20))
+        self.label_info.pack(anchor="w")
+
+        self.label_sub = ctk.CTkLabel(self.header_frame, text="Select MIUI packages to disable or restore", font=("Roboto", 12), text_color=TEXT_MUTED)
+        self.label_sub.pack(anchor="w", pady=(2, 0))
 
         self.select_all_var = ctk.BooleanVar(value=False)
         self.chk_select_all = ctk.CTkCheckBox(self.header_frame, text="Select All", variable=self.select_all_var, command=self.toggle_select_all)
-        self.chk_select_all.pack(side="right", pady=10, padx=10)
+        self.chk_select_all.pack(anchor="e", pady=6, padx=10)
 
         # List
-        self.scrollable_list = ctk.CTkScrollableFrame(self, label_text="Packages")
-        self.scrollable_list.pack(fill="both", expand=True, padx=20, pady=10)
+        self.scrollable_list = ctk.CTkScrollableFrame(self, label_text="Packages", fg_color=CARD_BG, corner_radius=14, border_width=1, border_color=CARD_BORDER)
+        self.scrollable_list.pack(fill="both", expand=True, padx=20, pady=(6, 10))
 
         self.check_vars = {}
         
         # bloatware_list is now a dict {category: [(pkg, desc), ...]}
         for category, items in self.bloatware_list.items():
             # Category Header
-            cat_label = ctk.CTkLabel(self.scrollable_list, text=category, font=("Roboto", 14, "bold"), text_color="#3B8ED0")
+            cat_label = ctk.CTkLabel(self.scrollable_list, text=category, font=("Roboto", 14, "bold"), text_color=ACCENT)
             cat_label.pack(anchor="w", padx=5, pady=(15, 5))
             
             for pkg, desc in items:
@@ -43,10 +47,10 @@ class DebloaterTab(ctk.CTkFrame):
 
 
         # Actions
-        self.action_frame = ctk.CTkFrame(self)
-        self.action_frame.pack(fill="x", padx=20, pady=20)
+        self.action_frame = ctk.CTkFrame(self, corner_radius=14, fg_color=CARD_BG, border_width=1, border_color=CARD_BORDER)
+        self.action_frame.pack(fill="x", padx=20, pady=(6, 16))
 
-        self.status_label = ctk.CTkLabel(self.action_frame, text="Status: Waiting for connection...", anchor="w")
+        self.status_label = ctk.CTkLabel(self.action_frame, text="Status: Waiting for connection...", anchor="w", text_color=TEXT_MUTED)
         self.status_label.pack(side="left", padx=20, pady=10, fill="x", expand=True)
 
 

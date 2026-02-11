@@ -14,45 +14,97 @@ from modules.constants import MIUI_ADS_AND_TRACKING
 
 # Configuration
 ctk.set_appearance_mode("Dark")
-ctk.set_default_color_theme("blue")
+ctk.set_default_color_theme("dark-blue")
+
+# UI Theme
+APP_BG = "#0F1115"
+TOPBAR_BG = "#0B0F17"
+SIDEBAR_BG = "#111827"
+SIDEBAR_ACTIVE = "#1F2937"
+SIDEBAR_HOVER = "#1F2937"
+TEXT_MUTED = "#9CA3AF"
+TEXT_OK = "#2CC985"
 
 class MiToolsLiteApp(ctk.CTk):
     def __init__(self):
         super().__init__()
 
         self.title("Mi Tools Lite - Modular 2.6")
-        self.geometry("1100x800")
+        self.geometry("1200x820")
+        self.configure(fg_color=APP_BG)
         
         # ADB Manager
         self.adb_manager = ADBManager()
         self.bloatware_list = MIUI_ADS_AND_TRACKING
 
         # Layout
-        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=0)
+        self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(1, weight=1)
 
-        # Header
-        self.header_frame = ctk.CTkFrame(self, corner_radius=0)
-        self.header_frame.grid(row=0, column=0, sticky="ew")
-        
+        # Top Bar
+        self.header_frame = ctk.CTkFrame(self, corner_radius=0, fg_color=TOPBAR_BG)
+        self.header_frame.grid(row=0, column=0, columnspan=2, sticky="ew")
+        self.header_frame.grid_columnconfigure(0, weight=1)
+        self.header_frame.grid_columnconfigure(1, weight=0)
+
         self.label_title = ctk.CTkLabel(self.header_frame, text="Mi Tools Lite", font=("Roboto Medium", 24))
-        self.label_title.pack(padx=20, pady=20)
+        self.label_title.grid(row=0, column=0, padx=22, pady=(16, 2), sticky="w")
 
-        # Tab View
-        self.tab_view = ctk.CTkTabview(self, command=self.on_tab_change)
-        self.tab_view.grid(row=1, column=0, padx=20, pady=20, sticky="nsew")
+        self.label_subtitle = ctk.CTkLabel(self.header_frame, text="Device toolbox for Xiaomi/MIUI", font=("Roboto", 12), text_color=TEXT_MUTED)
+        self.label_subtitle.grid(row=1, column=0, padx=22, pady=(0, 16), sticky="w")
 
-        # Tabs
-        self.tab_connect = self.tab_view.add("Connection & Info")
-        self.tab_debloat = self.tab_view.add("Debloater")
-        self.tab_file_transfer = self.tab_view.add("File Transfer") # New
-        self.tab_task = self.tab_view.add("Task Manager") 
-        self.tab_packages = self.tab_view.add("Package Manager")
-        self.tab_power = self.tab_view.add("Power & Performance")
-        self.tab_inspector = self.tab_view.add("Inspector")
-        self.tab_misc = self.tab_view.add("Tweaks")
-        self.tab_reboot = self.tab_view.add("Reboot")
-        self.tab_other = self.tab_view.add("Other")
+        self.header_status = ctk.CTkLabel(self.header_frame, text="Not connected", font=("Roboto", 12), text_color=TEXT_MUTED)
+        self.header_status.grid(row=0, column=1, rowspan=2, padx=22, pady=16, sticky="e")
+
+        # Sidebar
+        self.sidebar_frame = ctk.CTkFrame(self, corner_radius=0, fg_color=SIDEBAR_BG)
+        self.sidebar_frame.grid(row=1, column=0, sticky="nsew")
+        self.sidebar_frame.grid_rowconfigure(2, weight=1)
+        self.sidebar_frame.grid_columnconfigure(0, weight=1)
+
+        self.sidebar_title = ctk.CTkLabel(self.sidebar_frame, text="Navigation", font=("Roboto Medium", 13), text_color=TEXT_MUTED)
+        self.sidebar_title.grid(row=0, column=0, padx=18, pady=(18, 8), sticky="w")
+
+        self.nav_frame = ctk.CTkFrame(self.sidebar_frame, fg_color="transparent")
+        self.nav_frame.grid(row=1, column=0, padx=12, pady=8, sticky="nsew")
+
+        # Content
+        self.content_frame = ctk.CTkFrame(self, corner_radius=0, fg_color=APP_BG)
+        self.content_frame.grid(row=1, column=1, padx=20, pady=20, sticky="nsew")
+        self.content_frame.grid_rowconfigure(0, weight=1)
+        self.content_frame.grid_columnconfigure(0, weight=1)
+
+        self.page_container = ctk.CTkFrame(self.content_frame, fg_color="transparent")
+        self.page_container.grid(row=0, column=0, sticky="nsew")
+        self.page_container.grid_rowconfigure(0, weight=1)
+        self.page_container.grid_columnconfigure(0, weight=1)
+
+        # Pages
+        self.tab_connect = ctk.CTkFrame(self.page_container, fg_color="transparent")
+        self.tab_debloat = ctk.CTkFrame(self.page_container, fg_color="transparent")
+        self.tab_file_transfer = ctk.CTkFrame(self.page_container, fg_color="transparent")
+        self.tab_task = ctk.CTkFrame(self.page_container, fg_color="transparent")
+        self.tab_packages = ctk.CTkFrame(self.page_container, fg_color="transparent")
+        self.tab_power = ctk.CTkFrame(self.page_container, fg_color="transparent")
+        self.tab_inspector = ctk.CTkFrame(self.page_container, fg_color="transparent")
+        self.tab_misc = ctk.CTkFrame(self.page_container, fg_color="transparent")
+        self.tab_reboot = ctk.CTkFrame(self.page_container, fg_color="transparent")
+        self.tab_other = ctk.CTkFrame(self.page_container, fg_color="transparent")
+
+        for frame in [
+            self.tab_connect,
+            self.tab_debloat,
+            self.tab_file_transfer,
+            self.tab_task,
+            self.tab_packages,
+            self.tab_power,
+            self.tab_inspector,
+            self.tab_misc,
+            self.tab_reboot,
+            self.tab_other,
+        ]:
+            frame.grid(row=0, column=0, sticky="nsew")
 
         # Initialize Debloater Tab
         self.debloater = DebloaterTab(self.tab_debloat, self.adb_manager, self.bloatware_list)
@@ -91,8 +143,53 @@ class MiToolsLiteApp(ctk.CTk):
         self.reboot.pack(fill="both", expand=True)
 
         # Other
-        self.label_other = ctk.CTkLabel(self.tab_other, text="More features coming soon...", font=("Roboto", 16))
+        self.label_other = ctk.CTkLabel(self.tab_other, text="More features coming soon...", font=("Roboto", 16), text_color=TEXT_MUTED)
         self.label_other.pack(pady=40)
+
+        # Navigation Buttons
+        self.nav_buttons = {}
+        nav_items = [
+            ("connection", "Connection & Info", "🔌"),
+            ("debloater", "Debloater", "🧹"),
+            ("file_transfer", "File Transfer", "📁"),
+            ("task_manager", "Task Manager", "🧾"),
+            ("packages", "Package Manager", "📦"),
+            ("power", "Power & Performance", "⚡"),
+            ("inspector", "Inspector", "🔍"),
+            ("tweaks", "Tweaks", "🛠"),
+            ("reboot", "Reboot", "🔄"),
+            ("other", "Other", "✨"),
+        ]
+
+        for index, (key, label, icon) in enumerate(nav_items):
+            btn = ctk.CTkButton(
+                self.nav_frame,
+                text=f"{icon} {label}",
+                anchor="w",
+                fg_color="transparent",
+                hover_color=SIDEBAR_HOVER,
+                text_color="#E5E7EB",
+                height=36,
+                command=lambda k=key: self.show_tab(k),
+            )
+            btn.grid(row=index, column=0, padx=6, pady=4, sticky="ew")
+            self.nav_buttons[key] = btn
+
+        self.pages = {
+            "connection": self.tab_connect,
+            "debloater": self.tab_debloat,
+            "file_transfer": self.tab_file_transfer,
+            "task_manager": self.tab_task,
+            "packages": self.tab_packages,
+            "power": self.tab_power,
+            "inspector": self.tab_inspector,
+            "tweaks": self.tab_misc,
+            "reboot": self.tab_reboot,
+            "other": self.tab_other,
+        }
+
+        self.active_tab = None
+        self.show_tab("connection")
 
     def on_connected(self):
         # Notify other tabs that connection is active
@@ -104,16 +201,35 @@ class MiToolsLiteApp(ctk.CTk):
         self.power.status_label.configure(text="Connected.", text_color="#2CC985")
         self.power.check_low_power() # Auto check status
         self.task_manager.status_label.configure(text="Connected. Load processes to start.")
+        self.header_status.configure(text="Connected", text_color=TEXT_OK)
 
-    def on_tab_change(self):
-        current_tab = self.tab_view.get()
-        if current_tab == "Connection & Info":
-            self.connection.start_monitoring()
-        else:
+    def show_tab(self, tab_key):
+        if self.active_tab == tab_key:
+            return
+
+        if self.active_tab == "connection":
             self.connection.stop_monitoring()
 
-        if current_tab == "Debloater" and self.adb_manager.connected_device:
+        target = self.pages.get(tab_key)
+        if not target:
+            return
+
+        target.tkraise()
+        self.active_tab = tab_key
+        self._update_nav_buttons()
+
+        if tab_key == "connection":
+            self.connection.start_monitoring()
+
+        if tab_key == "debloater" and self.adb_manager.connected_device:
             self.debloater.check_uninstalled_status()
+
+    def _update_nav_buttons(self):
+        for key, button in self.nav_buttons.items():
+            if key == self.active_tab:
+                button.configure(fg_color=SIDEBAR_ACTIVE)
+            else:
+                button.configure(fg_color="transparent")
 
     def on_close(self):
         try:

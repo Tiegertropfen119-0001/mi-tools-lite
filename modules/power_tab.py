@@ -1,21 +1,28 @@
 
 import customtkinter as ctk
+from modules.ui_theme import CARD_BG, CARD_BORDER, TEXT_MUTED
 import threading
 
 class PowerTab(ctk.CTkFrame):
     def __init__(self, master, adb_manager):
-        super().__init__(master)
+        super().__init__(master, fg_color="transparent")
         self.adb_manager = adb_manager
 
         self.grid_columnconfigure(0, weight=1)
         
         # Header
-        self.header = ctk.CTkLabel(self, text="Power & Performance", font=("Roboto Medium", 18))
-        self.header.pack(pady=20)
+        self.header_frame = ctk.CTkFrame(self, fg_color="transparent")
+        self.header_frame.pack(fill="x", padx=20, pady=(10, 4))
+
+        self.header = ctk.CTkLabel(self.header_frame, text="Power & Performance", font=("Roboto Medium", 20))
+        self.header.pack(anchor="w")
+
+        self.header_sub = ctk.CTkLabel(self.header_frame, text="Battery saver, idle modes, and game booster", font=("Roboto", 12), text_color=TEXT_MUTED)
+        self.header_sub.pack(anchor="w", pady=(2, 0))
 
         # 1. Battery Saver Section
-        self.saver_frame = ctk.CTkFrame(self)
-        self.saver_frame.pack(fill="x", padx=20, pady=10)
+        self.saver_frame = ctk.CTkFrame(self, corner_radius=14, fg_color=CARD_BG, border_width=1, border_color=CARD_BORDER)
+        self.saver_frame.pack(fill="x", padx=20, pady=(6, 10))
         
         self.lbl_saver = ctk.CTkLabel(self.saver_frame, text="Android Battery Saver", font=("Roboto", 14, "bold"))
         self.lbl_saver.pack(anchor="w", padx=10, pady=(10, 5))
@@ -33,8 +40,8 @@ class PowerTab(ctk.CTkFrame):
         self.lbl_saver_status.pack(side="right", padx=10, pady=10)
 
         # 2. Doze Section
-        self.doze_frame = ctk.CTkFrame(self)
-        self.doze_frame.pack(fill="x", padx=20, pady=10)
+        self.doze_frame = ctk.CTkFrame(self, corner_radius=14, fg_color=CARD_BG, border_width=1, border_color=CARD_BORDER)
+        self.doze_frame.pack(fill="x", padx=20, pady=(0, 10))
 
         self.lbl_doze = ctk.CTkLabel(self.doze_frame, text="Doze / Deep Sleep", font=("Roboto", 14, "bold"))
         self.lbl_doze.pack(anchor="w", padx=10, pady=(10, 5))
@@ -46,8 +53,8 @@ class PowerTab(ctk.CTkFrame):
         self.btn_unforce.pack(side="left", padx=10, pady=10)
 
         # 3. Performance / Game Booster
-        self.boost_frame = ctk.CTkFrame(self)
-        self.boost_frame.pack(fill="x", padx=20, pady=10)
+        self.boost_frame = ctk.CTkFrame(self, corner_radius=14, fg_color=CARD_BG, border_width=1, border_color=CARD_BORDER)
+        self.boost_frame.pack(fill="x", padx=20, pady=(0, 10))
 
         self.lbl_boost = ctk.CTkLabel(self.boost_frame, text="Performance & Game Booster", font=("Roboto", 14, "bold"))
         self.lbl_boost.pack(anchor="w", padx=10, pady=(10, 5))
@@ -59,8 +66,8 @@ class PowerTab(ctk.CTkFrame):
         self.btn_boost_off.pack(side="left", padx=10, pady=10)
 
         # Status Bar
-        self.status_label = ctk.CTkLabel(self, text="", text_color="green")
-        self.status_label.pack(pady=10)
+        self.status_label = ctk.CTkLabel(self, text="", text_color=TEXT_MUTED)
+        self.status_label.pack(pady=(0, 10))
 
     def run_cmd(self, cmd_args, success_msg):
         if not self.adb_manager.connected_device:

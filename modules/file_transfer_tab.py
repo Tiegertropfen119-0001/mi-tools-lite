@@ -1,4 +1,5 @@
 import customtkinter as ctk
+from modules.ui_theme import CARD_BG, CARD_BORDER, TEXT_MUTED
 import threading
 import tkinter.filedialog
 import tkinter.messagebox
@@ -113,7 +114,7 @@ class FileRow(ctk.CTkFrame):
 
 class FileTransferTab(ctk.CTkFrame):
     def __init__(self, master, adb_manager):
-        super().__init__(master)
+        super().__init__(master, fg_color="transparent")
         self.adb_manager = adb_manager
         
         self.current_path = "/sdcard/"
@@ -123,7 +124,17 @@ class FileTransferTab(ctk.CTkFrame):
         
         # Layout
         self.grid_columnconfigure(0, weight=1)
-        self.grid_rowconfigure(2, weight=1) # List area grows
+        self.grid_rowconfigure(3, weight=1) # List area grows
+
+        # Page Header
+        self.page_header = ctk.CTkFrame(self, fg_color="transparent")
+        self.page_header.grid(row=0, column=0, padx=20, pady=(10, 4), sticky="ew")
+
+        self.page_title = ctk.CTkLabel(self.page_header, text="File Transfer", font=("Roboto Medium", 20))
+        self.page_title.pack(anchor="w")
+
+        self.page_sub = ctk.CTkLabel(self.page_header, text="Browse, upload, and manage device storage", font=("Roboto", 12), text_color=TEXT_MUTED)
+        self.page_sub.pack(anchor="w", pady=(2, 0))
 
         # 1. Header & Navigation
         self._setup_header()
@@ -132,8 +143,8 @@ class FileTransferTab(ctk.CTkFrame):
         self._setup_column_headers()
         
         # 3. File List
-        self.list_frame = ctk.CTkScrollableFrame(self, fg_color="transparent")
-        self.list_frame.grid(row=2, column=0, padx=10, pady=(0, 10), sticky="nsew")
+        self.list_frame = ctk.CTkScrollableFrame(self, fg_color=CARD_BG, corner_radius=14, border_width=1, border_color=CARD_BORDER)
+        self.list_frame.grid(row=3, column=0, padx=20, pady=(0, 10), sticky="nsew")
         
         # 4. Footer / Actions
         self._setup_footer()
@@ -151,8 +162,8 @@ class FileTransferTab(ctk.CTkFrame):
         self.last_right_clicked_item = None
 
     def _setup_header(self):
-        header = ctk.CTkFrame(self, fg_color="transparent")
-        header.grid(row=0, column=0, padx=10, pady=10, sticky="ew")
+        header = ctk.CTkFrame(self, corner_radius=14, fg_color=CARD_BG, border_width=1, border_color=CARD_BORDER)
+        header.grid(row=1, column=0, padx=20, pady=(6, 8), sticky="ew")
         
         # Refresh
         self.btn_refresh = ctk.CTkButton(header, text="↻", width=30, command=self.refresh_files)
@@ -181,7 +192,7 @@ class FileTransferTab(ctk.CTkFrame):
 
     def _setup_column_headers(self):
         cols = ctk.CTkFrame(self, height=30, fg_color=("gray90", "gray20"))
-        cols.grid(row=1, column=0, padx=10, pady=(0,0), sticky="ew")
+        cols.grid(row=2, column=0, padx=20, pady=(0, 0), sticky="ew")
         cols.grid_columnconfigure(1, weight=1)
 
         # Select All Checkbox logic
@@ -193,10 +204,10 @@ class FileTransferTab(ctk.CTkFrame):
         ctk.CTkLabel(cols, text="Size", width=80, anchor="e", font=("Roboto", 12, "bold")).grid(row=0, column=3, padx=15, sticky="e")
 
     def _setup_footer(self):
-        footer = ctk.CTkFrame(self, height=50)
-        footer.grid(row=3, column=0, padx=10, pady=10, sticky="ew")
+        footer = ctk.CTkFrame(self, corner_radius=14, fg_color=CARD_BG, border_width=1, border_color=CARD_BORDER)
+        footer.grid(row=4, column=0, padx=20, pady=(6, 12), sticky="ew")
         
-        self.lbl_status = ctk.CTkLabel(footer, text="Ready", anchor="w")
+        self.lbl_status = ctk.CTkLabel(footer, text="Ready", anchor="w", text_color=TEXT_MUTED)
         self.lbl_status.pack(side="left", padx=10, fill="x", expand=True)
         
         # Actions

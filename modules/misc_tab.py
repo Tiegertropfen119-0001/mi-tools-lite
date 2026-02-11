@@ -1,12 +1,22 @@
 
 import customtkinter as ctk
+from modules.ui_theme import CARD_BG, CARD_BORDER, TEXT_MUTED
 
 class MiscTab(ctk.CTkScrollableFrame):
     def __init__(self, master, adb_manager):
-        super().__init__(master)
+        super().__init__(master, fg_color="transparent")
         self.adb_manager = adb_manager
         
         self.columnconfigure(0, weight=1)
+
+        self.header_frame = ctk.CTkFrame(self, fg_color="transparent")
+        self.header_frame.pack(fill="x", padx=20, pady=(10, 4))
+
+        self.header_title = ctk.CTkLabel(self.header_frame, text="Tweaks", font=("Roboto Medium", 20))
+        self.header_title.pack(anchor="w")
+
+        self.header_sub = ctk.CTkLabel(self.header_frame, text="Quick system tweaks and utility actions", font=("Roboto", 12), text_color=TEXT_MUTED)
+        self.header_sub.pack(anchor="w", pady=(2, 0))
 
         # 1. Animation Scale (Existing)
         self.create_animation_section()
@@ -21,18 +31,18 @@ class MiscTab(ctk.CTkScrollableFrame):
         self.create_battery_section()
 
         # Status Footer
-        self.status_label = ctk.CTkLabel(self, text="Ready", text_color="gray")
-        self.status_label.pack(pady=20)
+        self.status_label = ctk.CTkLabel(self, text="Ready", text_color=TEXT_MUTED)
+        self.status_label.pack(pady=(6, 12))
 
 
     def create_animation_section(self):
-        f = ctk.CTkFrame(self)
-        f.pack(fill="x", padx=10, pady=10)
+        f = ctk.CTkFrame(self, corner_radius=14, fg_color=CARD_BG, border_width=1, border_color=CARD_BORDER)
+        f.pack(fill="x", padx=20, pady=(6, 10))
         
         ctk.CTkLabel(f, text="Animation Speed", font=("Roboto Medium", 16)).pack(anchor="w", padx=10, pady=5)
         
         slider_frame = ctk.CTkFrame(f, fg_color="transparent")
-        slider_frame.pack(fill="x", padx=10)
+        slider_frame.pack(fill="x", padx=12)
         
         self.anim_val = ctk.DoubleVar(value=1.0)
         self.lbl_anim_val = ctk.CTkLabel(slider_frame, text="1.0x", width=40)
@@ -43,7 +53,7 @@ class MiscTab(ctk.CTkScrollableFrame):
         slider.pack(fill="x", expand=True, side="left")
 
         btn_frame = ctk.CTkFrame(f, fg_color="transparent")
-        btn_frame.pack(fill="x", padx=10, pady=10)
+        btn_frame.pack(fill="x", padx=12, pady=(8, 10))
         
         ctk.CTkButton(btn_frame, text="Apply", width=100, command=self.apply_anim).pack(side="left", padx=5)
         ctk.CTkButton(btn_frame, text="Reset (1.0x)", width=100, fg_color="gray", command=self.reset_anim).pack(side="left", padx=5)
@@ -63,13 +73,13 @@ class MiscTab(ctk.CTkScrollableFrame):
 
 
     def create_density_section(self):
-        f = ctk.CTkFrame(self)
-        f.pack(fill="x", padx=10, pady=10)
+        f = ctk.CTkFrame(self, corner_radius=14, fg_color=CARD_BG, border_width=1, border_color=CARD_BORDER)
+        f.pack(fill="x", padx=20, pady=(0, 10))
         
         ctk.CTkLabel(f, text="Screen Density (DPI)", font=("Roboto Medium", 16)).pack(anchor="w", padx=10, pady=5)
         
         slider_frame = ctk.CTkFrame(f, fg_color="transparent")
-        slider_frame.pack(fill="x", padx=10)
+        slider_frame.pack(fill="x", padx=12)
         
         self.density_val = ctk.IntVar(value=440)
         self.lbl_density = ctk.CTkLabel(slider_frame, text="440", width=40)
@@ -85,7 +95,7 @@ class MiscTab(ctk.CTkScrollableFrame):
         slider.pack(fill="x", expand=True, side="left")
 
         btn_frame = ctk.CTkFrame(f, fg_color="transparent")
-        btn_frame.pack(fill="x", padx=10, pady=10)
+        btn_frame.pack(fill="x", padx=12, pady=(8, 10))
         
         ctk.CTkButton(btn_frame, text="Apply Density", width=120, command=self.apply_density).pack(side="left", padx=5)
         ctk.CTkButton(btn_frame, text="Reset Density", width=120, fg_color="gray", command=self.reset_density).pack(side="left", padx=5)
@@ -99,13 +109,13 @@ class MiscTab(ctk.CTkScrollableFrame):
 
 
     def create_network_section(self):
-        f = ctk.CTkFrame(self)
-        f.pack(fill="x", padx=10, pady=10)
+        f = ctk.CTkFrame(self, corner_radius=14, fg_color=CARD_BG, border_width=1, border_color=CARD_BORDER)
+        f.pack(fill="x", padx=20, pady=(0, 10))
         
         ctk.CTkLabel(f, text="Network Tools", font=("Roboto Medium", 16)).pack(anchor="w", padx=10, pady=5)
 
         btn_frame = ctk.CTkFrame(f, fg_color="transparent")
-        btn_frame.pack(fill="x", padx=10, pady=5)
+        btn_frame.pack(fill="x", padx=12, pady=8)
         
         ctk.CTkButton(btn_frame, text="Restart Wi-Fi", command=self.restart_wifi).pack(side="left", padx=5, expand=True, fill="x")
         ctk.CTkButton(btn_frame, text="Restart Cellular", command=self.restart_cellular).pack(side="left", padx=5, expand=True, fill="x")
@@ -129,15 +139,15 @@ class MiscTab(ctk.CTkScrollableFrame):
 
 
     def create_battery_section(self):
-        f = ctk.CTkFrame(self)
-        f.pack(fill="x", padx=10, pady=10)
+        f = ctk.CTkFrame(self, corner_radius=14, fg_color=CARD_BG, border_width=1, border_color=CARD_BORDER)
+        f.pack(fill="x", padx=20, pady=(0, 10))
         
         ctk.CTkLabel(f, text="Battery Spoofer", font=("Roboto Medium", 16)).pack(anchor="w", padx=10, pady=5)
         
-        ctk.CTkLabel(f, text="Set fake battery level (0-100+)", text_color="gray", font=("Roboto", 12)).pack(anchor="w", padx=15)
+        ctk.CTkLabel(f, text="Set fake battery level (0-100+)", text_color=TEXT_MUTED, font=("Roboto", 12)).pack(anchor="w", padx=15)
         
         input_frame = ctk.CTkFrame(f, fg_color="transparent")
-        input_frame.pack(fill="x", padx=10, pady=5)
+        input_frame.pack(fill="x", padx=12, pady=(6, 4))
 
         self.entry_battery = ctk.CTkEntry(input_frame, placeholder_text="Level (e.g. 1)")
         self.entry_battery.pack(side="left", padx=5, expand=True, fill="x")
@@ -145,7 +155,7 @@ class MiscTab(ctk.CTkScrollableFrame):
         ctk.CTkButton(input_frame, text="Set Level", command=self.set_battery_custom).pack(side="left", padx=5)
 
         btn_frame = ctk.CTkFrame(f, fg_color="transparent")
-        btn_frame.pack(fill="x", padx=10, pady=5)
+        btn_frame.pack(fill="x", padx=12, pady=(6, 10))
         
         ctk.CTkButton(btn_frame, text="Set 1%", fg_color="#D32F2F", hover_color="#B71C1C", width=80, command=lambda: self.set_battery_level("1")).pack(side="left", padx=5)
         ctk.CTkButton(btn_frame, text="Set 100%", width=80, command=lambda: self.set_battery_level("100")).pack(side="left", padx=5)
