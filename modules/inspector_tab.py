@@ -1,10 +1,11 @@
 
 import customtkinter as ctk
+from modules.ui_theme import CARD_BG, CARD_BORDER, TEXT_MUTED
 import threading
 
 class InspectorTab(ctk.CTkFrame):
     def __init__(self, master, adb_manager):
-        super().__init__(master)
+        super().__init__(master, fg_color="transparent")
         self.adb_manager = adb_manager
 
         self.grid_columnconfigure(0, weight=1)
@@ -13,12 +14,18 @@ class InspectorTab(ctk.CTkFrame):
         self.grid_rowconfigure(4, weight=1) # Output area expands
 
 
-        self.header = ctk.CTkLabel(self, text="System & App Inspector", font=("Roboto Medium", 18))
-        self.header.grid(row=0, column=0, pady=10)
+        self.header_frame = ctk.CTkFrame(self, fg_color="transparent")
+        self.header_frame.grid(row=0, column=0, padx=20, pady=(10, 4), sticky="ew")
+
+        self.header = ctk.CTkLabel(self.header_frame, text="Inspector", font=("Roboto Medium", 20))
+        self.header.pack(anchor="w")
+
+        self.header_sub = ctk.CTkLabel(self.header_frame, text="Advanced dumpsys helpers and manual shell access", font=("Roboto", 12), text_color=TEXT_MUTED)
+        self.header_sub.pack(anchor="w", pady=(2, 0))
 
         # 1. Target Package Input
-        self.target_frame = ctk.CTkFrame(self)
-        self.target_frame.grid(row=1, column=0, padx=20, pady=5, sticky="ew")
+        self.target_frame = ctk.CTkFrame(self, corner_radius=14, fg_color=CARD_BG, border_width=1, border_color=CARD_BORDER)
+        self.target_frame.grid(row=1, column=0, padx=20, pady=(6, 10), sticky="ew")
         
         self.lbl_pkg = ctk.CTkLabel(self.target_frame, text="Target Package:", width=100)
         self.lbl_pkg.pack(side="left", padx=5)
@@ -37,8 +44,8 @@ class InspectorTab(ctk.CTkFrame):
         self.btn_perms.pack(side="right", padx=5, pady=5)
 
         # 2. General Inspections Grid
-        self.ops_frame = ctk.CTkFrame(self)
-        self.ops_frame.grid(row=2, column=0, padx=20, pady=10, sticky="ew")
+        self.ops_frame = ctk.CTkFrame(self, corner_radius=14, fg_color=CARD_BG, border_width=1, border_color=CARD_BORDER)
+        self.ops_frame.grid(row=2, column=0, padx=20, pady=(0, 10), sticky="ew")
 
         # Row 1
         self.btn_doze = ctk.CTkButton(self.ops_frame, text="Doze/Idle State", command=lambda: self.run_dump(["deviceidle"], "Doze Status"))
@@ -72,8 +79,8 @@ class InspectorTab(ctk.CTkFrame):
 
 
         # 3. Manual Shell Command
-        self.shell_frame = ctk.CTkFrame(self)
-        self.shell_frame.grid(row=3, column=0, padx=20, pady=5, sticky="ew")
+        self.shell_frame = ctk.CTkFrame(self, corner_radius=14, fg_color=CARD_BG, border_width=1, border_color=CARD_BORDER)
+        self.shell_frame.grid(row=3, column=0, padx=20, pady=(0, 10), sticky="ew")
 
         self.lbl_shell = ctk.CTkLabel(self.shell_frame, text="ADB Shell Command:", width=120)
         self.lbl_shell.pack(side="left", padx=5)
@@ -86,8 +93,14 @@ class InspectorTab(ctk.CTkFrame):
         self.btn_run_shell.pack(side="right", padx=5, pady=5)
 
         # 4. Output Viewer
-        self.txt_output = ctk.CTkTextbox(self, font=("Consolas", 12))
-        self.txt_output.grid(row=4, column=0, padx=20, pady=10, sticky="nsew")
+        self.output_frame = ctk.CTkFrame(self, corner_radius=14, fg_color=CARD_BG, border_width=1, border_color=CARD_BORDER)
+        self.output_frame.grid(row=4, column=0, padx=20, pady=(0, 12), sticky="nsew")
+
+        self.output_frame.grid_rowconfigure(0, weight=1)
+        self.output_frame.grid_columnconfigure(0, weight=1)
+
+        self.txt_output = ctk.CTkTextbox(self.output_frame, font=("Consolas", 12))
+        self.txt_output.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
         self.txt_output.insert("1.0", "Select a function to view internal diagnostics...")
 
     def run_custom_shell(self):

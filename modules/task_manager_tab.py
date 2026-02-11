@@ -1,26 +1,30 @@
 
 import customtkinter as ctk
+from modules.ui_theme import CARD_BG, CARD_BORDER, TEXT_MUTED
 import threading
 import subprocess
 
 class TaskManagerTab(ctk.CTkFrame):
     def __init__(self, master, adb_manager):
-        super().__init__(master)
+        super().__init__(master, fg_color="transparent")
         self.adb_manager = adb_manager
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(2, weight=1) # Search list area
 
         # 1. Header & Controls
-        self.header_frame = ctk.CTkFrame(self)
-        self.header_frame.grid(row=0, column=0, padx=20, pady=10, sticky="ew")
+        self.header_frame = ctk.CTkFrame(self, fg_color="transparent")
+        self.header_frame.grid(row=0, column=0, padx=20, pady=(10, 4), sticky="ew")
 
-        self.label_header = ctk.CTkLabel(self.header_frame, text="Task Manager & Process Killer", font=("Roboto Medium", 18))
-        self.label_header.pack(pady=10)
+        self.label_header = ctk.CTkLabel(self.header_frame, text="Task Manager", font=("Roboto Medium", 20))
+        self.label_header.pack(anchor="w")
+
+        self.label_sub = ctk.CTkLabel(self.header_frame, text="Inspect and manage running user processes", font=("Roboto", 12), text_color=TEXT_MUTED)
+        self.label_sub.pack(anchor="w", pady=(2, 0))
 
         # Process List Controls
-        self.controls_frame = ctk.CTkFrame(self)
-        self.controls_frame.grid(row=1, column=0, padx=20, pady=5, sticky="ew")
+        self.controls_frame = ctk.CTkFrame(self, corner_radius=14, fg_color=CARD_BG, border_width=1, border_color=CARD_BORDER)
+        self.controls_frame.grid(row=1, column=0, padx=20, pady=(6, 10), sticky="ew")
 
         self.btn_refresh = ctk.CTkButton(self.controls_frame, text="Refresh Processes", command=self.refresh_processes)
         self.btn_refresh.pack(side="left", padx=10, pady=10)
@@ -33,12 +37,12 @@ class TaskManagerTab(ctk.CTkFrame):
         self.entry_search.bind("<KeyRelease>", self.filter_list)
 
         # 2. Process List
-        self.list_frame = ctk.CTkScrollableFrame(self, label_text="Running Processes")
-        self.list_frame.grid(row=2, column=0, padx=20, pady=10, sticky="nsew")
+        self.list_frame = ctk.CTkScrollableFrame(self, label_text="Running Processes", fg_color=CARD_BG, corner_radius=14, border_width=1, border_color=CARD_BORDER)
+        self.list_frame.grid(row=2, column=0, padx=20, pady=(0, 10), sticky="nsew")
 
         # 3. Actions for Selected Process
-        self.action_frame = ctk.CTkFrame(self)
-        self.action_frame.grid(row=3, column=0, padx=20, pady=20, sticky="ew")
+        self.action_frame = ctk.CTkFrame(self, corner_radius=14, fg_color=CARD_BG, border_width=1, border_color=CARD_BORDER)
+        self.action_frame.grid(row=3, column=0, padx=20, pady=(6, 12), sticky="ew")
 
         self.lbl_selected = ctk.CTkLabel(self.action_frame, text="Selected: None", font=("Roboto", 12, "bold"))
         self.lbl_selected.pack(side="top", pady=5, fill="x")
@@ -53,8 +57,8 @@ class TaskManagerTab(ctk.CTkFrame):
         self.btn_crash = ctk.CTkButton(self.action_frame, text="Crash (SIGSEGV)", command=lambda: self.kill_action("crash"), fg_color="gray", hover_color="#555")
         self.btn_crash.pack(side="left", padx=10, pady=10, expand=True)
 
-        self.status_label = ctk.CTkLabel(self, text="Ready", text_color="gray")
-        self.status_label.grid(row=4, column=0, pady=10)
+        self.status_label = ctk.CTkLabel(self, text="Ready", text_color=TEXT_MUTED)
+        self.status_label.grid(row=4, column=0, pady=(0, 10))
 
         # Data
         self.current_processes = [] # List of tuples/dicts: (pid, pkg, name)
@@ -119,12 +123,6 @@ class TaskManagerTab(ctk.CTkFrame):
             text = f"[{p['pid']}] {p['name']}"
             btn = ctk.CTkButton(f, text=text, anchor="w", fg_color="transparent", border_width=1, text_color=("black", "white"),
                                 command=lambda proc=p: self.select_process(proc))
-            btn.pack(fill="x")
-
-            btn.pack(fill="x")
-            self.process_widgets[p['pid']] = btn
-            
-
             btn.pack(fill="x")
             self.process_widgets[p['pid']] = btn
             

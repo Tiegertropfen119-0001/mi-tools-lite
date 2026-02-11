@@ -1,17 +1,28 @@
 
 import customtkinter as ctk
+from modules.ui_theme import CARD_BG, CARD_BORDER, TEXT_MUTED
 
 class PackagesTab(ctk.CTkFrame):
     def __init__(self, master, adb_manager):
-        super().__init__(master)
+        super().__init__(master, fg_color="transparent")
         self.adb_manager = adb_manager
 
         self.grid_columnconfigure(0, weight=1)
-        self.grid_rowconfigure(2, weight=1)
+        self.grid_rowconfigure(3, weight=1)
+
+        # Header
+        self.header_frame = ctk.CTkFrame(self, fg_color="transparent")
+        self.header_frame.grid(row=0, column=0, padx=20, pady=(10, 4), sticky="ew")
+
+        self.header_title = ctk.CTkLabel(self.header_frame, text="Package Manager", font=("Roboto Medium", 20))
+        self.header_title.pack(anchor="w")
+
+        self.header_sub = ctk.CTkLabel(self.header_frame, text="Filter, search, and manage installed apps", font=("Roboto", 12), text_color=TEXT_MUTED)
+        self.header_sub.pack(anchor="w", pady=(2, 0))
 
         # Filters / Mode Selection
-        self.filter_frame = ctk.CTkFrame(self)
-        self.filter_frame.grid(row=0, column=0, padx=20, pady=10, sticky="ew")
+        self.filter_frame = ctk.CTkFrame(self, corner_radius=14, fg_color=CARD_BG, border_width=1, border_color=CARD_BORDER)
+        self.filter_frame.grid(row=1, column=0, padx=20, pady=(6, 10), sticky="ew")
 
         self.modes = {
             "System Apps": "system",
@@ -32,22 +43,22 @@ class PackagesTab(ctk.CTkFrame):
         self.btn_refresh.pack(side="left", padx=10, pady=10)
 
         # Search
-        self.search_frame = ctk.CTkFrame(self, fg_color="transparent")
-        self.search_frame.grid(row=1, column=0, padx=20, pady=(0, 10), sticky="ew")
+        self.search_frame = ctk.CTkFrame(self, corner_radius=14, fg_color=CARD_BG, border_width=1, border_color=CARD_BORDER)
+        self.search_frame.grid(row=2, column=0, padx=20, pady=(0, 10), sticky="ew")
 
         self.entry_search = ctk.CTkEntry(self.search_frame, placeholder_text="Search package...")
         self.entry_search.pack(fill="x", expand=True)
         self.entry_search.bind("<KeyRelease>", self.filter_list)
 
         # List Area
-        self.list_frame = ctk.CTkScrollableFrame(self, label_text="Packages List")
-        self.list_frame.grid(row=2, column=0, padx=20, pady=10, sticky="nsew")
+        self.list_frame = ctk.CTkScrollableFrame(self, label_text="Packages List", fg_color=CARD_BG, corner_radius=14, border_width=1, border_color=CARD_BORDER)
+        self.list_frame.grid(row=3, column=0, padx=20, pady=(0, 10), sticky="nsew")
 
         # Action Buttons
-        self.action_frame = ctk.CTkFrame(self)
-        self.action_frame.grid(row=3, column=0, padx=20, pady=20, sticky="ew")
+        self.action_frame = ctk.CTkFrame(self, corner_radius=14, fg_color=CARD_BG, border_width=1, border_color=CARD_BORDER)
+        self.action_frame.grid(row=4, column=0, padx=20, pady=(6, 16), sticky="ew")
 
-        self.status_label = ctk.CTkLabel(self.action_frame, text="Ready", anchor="w")
+        self.status_label = ctk.CTkLabel(self.action_frame, text="Ready", anchor="w", text_color=TEXT_MUTED)
         self.status_label.pack(side="left", padx=20, pady=10, fill="x", expand=True)
 
         # Dynamic Buttons (will be packed based on mode)

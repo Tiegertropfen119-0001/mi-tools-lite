@@ -1,10 +1,11 @@
 
 import customtkinter as ctk
+from modules.ui_theme import CARD_BG, CARD_BORDER, TEXT_MUTED
 
 class ConnectionTab(ctk.CTkFrame):
 
     def __init__(self, master, adb_manager, on_connect_callback=None):
-        super().__init__(master)
+        super().__init__(master, fg_color="transparent")
         self.adb_manager = adb_manager
         self.on_connect_callback = on_connect_callback
         self.is_monitoring = False
@@ -13,9 +14,19 @@ class ConnectionTab(ctk.CTkFrame):
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1) # Two columns for info
         
+        # Page Header
+        self.header_frame = ctk.CTkFrame(self, fg_color="transparent")
+        self.header_frame.grid(row=0, column=0, columnspan=2, padx=20, pady=(10, 4), sticky="ew")
+
+        self.header_title = ctk.CTkLabel(self.header_frame, text="Connection & Info", font=("Roboto Medium", 20))
+        self.header_title.pack(anchor="w")
+
+        self.header_sub = ctk.CTkLabel(self.header_frame, text="Pair a device and view live system metrics", font=("Roboto", 12), text_color=TEXT_MUTED)
+        self.header_sub.pack(anchor="w", pady=(2, 0))
+
         # Connection Section
-        self.conn_frame = ctk.CTkFrame(self)
-        self.conn_frame.grid(row=0, column=0, columnspan=2, padx=20, pady=20, sticky="ew")
+        self.conn_frame = ctk.CTkFrame(self, corner_radius=14, fg_color=CARD_BG, border_width=1, border_color=CARD_BORDER)
+        self.conn_frame.grid(row=1, column=0, columnspan=2, padx=20, pady=(8, 10), sticky="ew")
 
         self.label_device = ctk.CTkLabel(self.conn_frame, text="Select Device:", font=("Roboto", 14))
         self.label_device.pack(side="left", padx=10, pady=10)
@@ -30,13 +41,13 @@ class ConnectionTab(ctk.CTkFrame):
         self.btn_connect = ctk.CTkButton(self.conn_frame, text="Connect", command=self.connect_device)
         self.btn_connect.pack(side="left", padx=10, pady=10)
 
-        self.status_label = ctk.CTkLabel(self, text="Status: Ready", anchor="w")
-        self.status_label.grid(row=1, column=0, columnspan=2, padx=20, pady=(0, 10), sticky="ew")
+        self.status_label = ctk.CTkLabel(self, text="Status: Ready", anchor="w", text_color=TEXT_MUTED)
+        self.status_label.grid(row=2, column=0, columnspan=2, padx=20, pady=(0, 8), sticky="ew")
 
         # Device Info Section
-        self.info_frame = ctk.CTkFrame(self)
-        self.info_frame.grid(row=2, column=0, columnspan=2, padx=20, pady=10, sticky="nsew")
-        self.grid_rowconfigure(2, weight=1)
+        self.info_frame = ctk.CTkFrame(self, corner_radius=14, fg_color=CARD_BG, border_width=1, border_color=CARD_BORDER)
+        self.info_frame.grid(row=3, column=0, columnspan=2, padx=20, pady=(6, 12), sticky="nsew")
+        self.grid_rowconfigure(3, weight=1)
         
         self.info_frame.grid_columnconfigure(0, weight=1)
         self.info_frame.grid_columnconfigure(1, weight=1)
@@ -59,7 +70,7 @@ class ConnectionTab(ctk.CTkFrame):
         frame = ctk.CTkFrame(self.info_frame, fg_color="transparent")
         frame.grid(row=row, column=col, padx=10, pady=10, sticky="ew")
         
-        lbl_title = ctk.CTkLabel(frame, text=title, font=("Roboto", 12, "bold"))
+        lbl_title = ctk.CTkLabel(frame, text=title, font=("Roboto", 12, "bold"), text_color=TEXT_MUTED)
         lbl_title.pack(anchor="w")
         
         lbl_val = ctk.CTkLabel(frame, text="--", font=("Roboto", 12))
