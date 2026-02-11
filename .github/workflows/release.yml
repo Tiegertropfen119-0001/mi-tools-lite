@@ -7,7 +7,17 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    name: Build for ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            artifact_name: mi_tools_lite-windows
+            exe_name: mi_tools_lite.exe
+            extra_args: --windowed
 
     steps:
       - name: Checkout repository
@@ -17,6 +27,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.x"
+          cache: "pip"
 
       - name: Install dependencies
         run: |
@@ -26,26 +37,48 @@ jobs:
 
       - name: Build executable
         run: |
-          pyinstaller --onefile --windowed mi_tools_lite.py
+          pyinstaller --name "mi_tools_lite" --onefile ${{ matrix.extra_args }} mi_tools_lite.py
 
-      - name: Get tag name
-        run: echo "TAG_NAME=${GITHUB_REF#refs/tags/}" >> $env:GITHUB_ENV
-
-      - name: Create ZIP package
+      - name: Package build
+        shell: pwsh
         run: |
-          mkdir package
-          copy dist\mi_tools_lite.exe package\
-          copy AdbWinApi.dll package\
-          copy AdbWinUsbApi.dll package\
-          copy adb.exe package\
-          powershell Compress-Archive package mi_tools_lite-${{ env.TAG_NAME }}.zip
+          New-Item -ItemType Directory -Force package
+          Copy-Item dist/${{ matrix.exe_name }} package/
 
-      - name: Create Release and Upload ZIP
+          if (Test-Path "AdbWinApi.dll") { Copy-Item AdbWinApi.dll package/ }
+          if (Test-Path "AdbWinUsbApi.dll") { Copy-Item AdbWinUsbApi.dll package/ }
+          if (Test-Path "adb.exe") { Copy-Item adb.exe package/ }
+
+      - name: Create ZIP
+        shell: pwsh
+        run: |
+          Compress-Archive `
+            -Path package\* `
+            -DestinationPath mi_tools_lite-${{ github.ref_name }}.zip
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: mi_tools_lite-${{ github.ref_name }}.zip
+
+  release:
+    name: Create GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ env.TAG_NAME }}
-          name: Release ${{ env.TAG_NAME }}
-          body: Automated release for version ${{ env.TAG_NAME }}
-          files: mi_tools_lite-${{ env.TAG_NAME }}.zip
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          body: Automated release for version ${{ github.ref_name }}
+          files: artifacts/**/**/*.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
